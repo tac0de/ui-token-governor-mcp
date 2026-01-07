@@ -1,0 +1,50 @@
+{
+  "name": "ui-token-governor-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for UI token governance and framework-agnostic component generation",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": {
+    "ui-token-governor-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tac0de/ui-token-governor-mcp.git"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ui-tokens",
+    "design-systems",
+    "component-generation",
+    "figma",
+    "autohtml",
+    "design-tokens"
+  ],
+  "files": [
+    "dist",
+    "src",
+    "tokens",
+    "README.md"
+  ],
+  "author": "tac0de",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tac0de/ui-token-governor-mcp/issues"
+  },
+  "homepage": "https://github.com/tac0de/ui-token-governor-mcp#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

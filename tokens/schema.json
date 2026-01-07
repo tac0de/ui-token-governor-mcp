@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UI Token Schema",
+  "description": "Schema for UI tokens - framework-agnostic design tokens",
+  "type": "object",
+  "properties": {
+    "color": {
+      "type": "object",
+      "description": "Color tokens for backgrounds, text, borders, etc.",
+      "properties": {
+        "base": { "type": "string", "description": "Base color value" },
+        "light": { "type": "string", "description": "Light variant" },
+        "dark": { "type": "string", "description": "Dark variant" },
+        "contrast": { "type": "string", "description": "Contrast color for text" }
+      }
+    },
+    "spacing": {
+      "type": "object",
+      "description": "Spacing tokens for margins, padding, gaps",
+      "properties": {
+        "value": { "type": "string", "description": "CSS value (e.g., 1rem, 16px)" },
+        "px": { "type": "number", "description": "Pixel equivalent" }
+      }
+    },
+    "typography": {
+      "type": "object",
+      "description": "Typography tokens for fonts, sizes, weights",
+      "properties": {
+        "value": { "type": "string", "description": "CSS value" }
+      }
+    },
+    "elevation": {
+      "type": "object",
+      "description": "Elevation/shadow tokens",
+      "properties": {
+        "value": { "type": "string", "description": "Box shadow value" }
+      }
+    },
+    "radius": {
+      "type": "object",
+      "description": "Border radius tokens",
+      "properties": {
+        "value": { "type": "string", "description": "Border radius value" }
+      }
+    },
+    "breakpoint": {
+      "type": "object",
+      "description": "Responsive breakpoint tokens",
+      "properties": {
+        "value": { "type": "string", "description": "Media query value" },
+        "px": { "type": "number", "description": "Pixel value" }
+      }
+    },
+    "motion": {
+      "type": "object",
+      "description": "Animation/transition tokens",
+      "properties": {
+        "duration": { "type": "string", "description": "Transition duration" },
+        "easing": { "type": "string", "description": "Easing function" }
+      }
+    }
+  },
+  "required": ["value"],
+  "additionalProperties": false
+}
