@@ -1,5 +1,5 @@
 {
-  "name": "ui-token-governor-mcp",
+  "name": "@tac0de/ui-token-governor-mcp",
   "version": "1.0.0",
   "description": "MCP server for UI token governance and framework-agnostic component generation",
   "main": "dist/index.js",
