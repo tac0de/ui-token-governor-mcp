@@ -1,48 +1,131 @@
-# UI Token Governor MCP
+# @tac0de/ui-token-governor-mcp
 
-A Model Context Protocol (MCP) server for governing token-based UI systems and generating framework-agnostic components. Optimized for the **Design Tokens → Figma → AutoHTML → Production Code** workflow.
+MCP server for UI token governance. **Design Tokens → Figma → AutoHTML → Production Code**
 
-## Features
+## Installation & Configuration
 
-- **Token Reading**: Read and validate UI tokens from your design system
-- **Figma Export Processing**: Extract tokens from Figma design exports
-- **AutoHTML Conversion**: Transform AutoHTML to token-governed components
-- **Component Validation**: Ensure components follow token-governed rules
-- **Component Generation**: Generate token-compliant components for multiple frameworks
-- **Multi-Framework Support**: React, Vue, Svelte, Angular, and WebC
-- **Zod Validation**: Type-safe input validation using Zod schemas
+### via npx (Recommended)
 
-## Installation
-
-```bash
-npm install ui-token-governor-mcp
+```json
+{
+  "mcpServers": {
+    "ui-token-governor": {
+      "command": "npx",
+      "args": ["@tac0de/ui-token-governor-mcp"]
+    }
+  }
+}
 ```
 
-## Building
+### via npm install
 
 ```bash
-npm install
-npm run build
+npm install @tac0de/ui-token-governor-mcp
 ```
-
-## Configuration
-
-Add to your Claude Desktop MCP config (`claude_desktop_config.json`):
 
 ```json
 {
   "mcpServers": {
     "ui-token-governor": {
       "command": "node",
-      "args": ["/path/to/ui-token-governor-mcp/dist/index.js"]
+      "args": ["/path/to/node_modules/@tac0de/ui-token-governor-mcp/dist/index.js"]
     }
   }
 }
 ```
 
-## Workflow: Design Tokens → Figma → AutoHTML → Code
+## Tools
 
-This MCP server follows the workflow:
+### `read_tokens`
+
+Read UI tokens from the token system.
+
+```typescript
+{
+  tokenPath?: string;        // e.g., "tokens/color/primary.json"
+  category?: "color" | "spacing" | "typography" | "elevation" | "radius" | "breakpoint" | "motion";
+}
+```
+
+---
+
+### `validate_component_tokens`
+
+Validate components follow token-governed rules.
+
+```typescript
+{
+  componentCode: string;     // Component code to validate
+  framework: "react" | "vue" | "svelte" | "angular" | "webc";
+}
+```
+
+**Detects:**
+- Inline styles (`style={{...}}`, `style="..."`)
+- Hardcoded colors (`#fff`)
+- Hardcoded spacing (`px`, `rem`, `em`)
+- Hardcoded fonts (`Arial`)
+- Framework-specific tokens
+
+---
+
+### `generate_component`
+
+Generate token-governed component with Storybook stories.
+
+```typescript
+{
+  componentName: string;     // Required
+  description: string;       // Required
+  framework?: "react" | "vue" | "svelte" | "angular" | "webc";  // Default: "react"
+  tokenCategories?: ("color" | "spacing" | "typography" | "elevation" | "radius" | "breakpoint" | "motion")[];  // Default: ["color", "spacing", "typography"]
+}
+```
+
+**Returns:** Component code + Storybook story + Token mapping guide
+
+---
+
+### `process_figma_export`
+
+Extract design tokens from Figma JSON exports.
+
+```typescript
+{
+  figmaFilePath: string;     // Required - Path to Figma export JSON
+  extractTokens?: boolean;   // Default: true
+  generateComponents?: boolean;  // Default: false
+  outputDir?: string;        // Default: "./tokens"
+}
+```
+
+**Extracts:** Colors, spacing, typography, components
+
+---
+
+### `convert_autohtml`
+
+Transform AutoHTML to token-governed components.
+
+```typescript
+{
+  autohtmlCode: string;      // Required - AutoHTML code
+  framework?: "react" | "vue" | "svelte" | "angular" | "webc";  // Default: "react"
+  applyTokens?: boolean;     // Default: true
+  removeInlineStyles?: boolean;  // Default: true
+  componentName?: string;    // Optional
+}
+```
+
+**Does:**
+1. Remove inline styles
+2. Replace hardcoded values with tokens
+3. Generate framework-specific code
+4. Create Storybook stories
+
+---
+
+## Workflow
 
 ```
 Design Tokens → Figma Export → AutoHTML → Token-Governed Code
@@ -51,187 +134,26 @@ Design Tokens → Figma Export → AutoHTML → Token-Governed Code
                                 HTML         Components
 ```
 
-### Step 1: Design Tokens
-Define your design tokens in JSON format (see [Token System Structure](#token-system-structure))
-
-### Step 2: Figma Export
-Export your designs from Figma as JSON
-
-### Step 3: Process Figma Export
-Use `process_figma_export` to extract tokens and detect components
-
-### Step 4: AutoHTML Conversion
-Use `convert_autohtml` to transform AutoHTML to token-governed code
-
-### Step 5: Validation
-Use `validate_component_tokens` to ensure token compliance
-
-## Available Tools
-
-### 1. `read_tokens`
-
-Read UI tokens from your token system.
-
-**Parameters:**
-- `tokenPath` (optional): Path to token file (e.g., `tokens/color/primary.json`)
-- `category` (optional): Token category filter (`color`, `spacing`, `typography`, `elevation`, `radius`, `breakpoint`, `motion`)
-
-**Example:**
-```
-Read tokens from the spacing category
-```
-
-### 2. `validate_component_tokens`
-
-Validate that components follow token-governed rules.
-
-**Parameters:**
-- `componentCode`: The component code to validate
-- `framework`: Target framework (`react`, `vue`, `svelte`, `angular`, `webc`)
-
-**Forbidden Patterns:**
-- Inline styles (`style={{...}}` or `style="..."`)
-- Hardcoded colors (`#fff`, `rgb(...)`)
-- Hardcoded spacing (`px`, `rem`, `em`)
-- Hardcoded fonts (`Arial`, `Helvetica`)
-- Framework-specific token references
-
-**Example:**
-```
-Validate this React component for token compliance:
-[component code]
-```
-
-### 3. `generate_component`
-
-Generate a token-governed UI component.
-
-**Parameters:**
-- `componentName`: Name of the component (required)
-- `description`: Component description and requirements (required)
-- `framework`: Target framework (default: `react`)
-- `tokenCategories`: Token categories to use (default: `["color", "spacing", "typography"]`)
-
-**Output:**
-- Component code with token mappings
-- Storybook story
-- Token mapping guide
-
-**Example:**
-```
-Generate a Button component for React with primary and secondary variants, using color, spacing, and typography tokens
-```
-
-### 4. `process_figma_export`
-
-Process Figma design exports and extract design tokens.
-
-**Parameters:**
-- `figmaFilePath`: Path to Figma export JSON file (required)
-- `extractTokens`: Whether to extract tokens (default: `true`)
-- `generateComponents`: Whether to generate component stubs (default: `false`)
-- `outputDir`: Output directory for generated tokens (default: `./tokens`)
-
-**Features:**
-- Extract design tokens from Figma JSON exports
-- Parse Figma styles, colors, spacing, typography
-- Generate framework-agnostic token files
-- Validate token structure against schema
-
-**Example:**
-```
-Process the Figma export at figma/design-system.json and extract all tokens
-```
-
-### 5. `convert_autohtml`
-
-Convert AutoHTML code to token-governed components.
-
-**Parameters:**
-- `autohtmlCode`: AutoHTML code to convert (required)
-- `framework`: Target framework (default: `react`)
-- `applyTokens`: Whether to apply tokens (default: `true`)
-- `removeInlineStyles`: Whether to remove inline styles (default: `true`)
-- `componentName`: Name for the generated component (optional)
-
-**What it does:**
-1. Extract component structure from AutoHTML
-2. Identify inline styles and hardcoded values
-3. Replace with token references
-4. Generate framework-specific component code
-5. Include Storybook stories
-
-**Example:**
-```
-Convert this AutoHTML to a React component with tokens:
-[AutoHTML code]
-```
-
-## Token System Structure
+## Token Structure
 
 ```
 tokens/
 ├── color/
 │   ├── primary.json
-│   ├── secondary.json
-│   └── index.json
+│   └── secondary.json
 ├── spacing/
-│   ├── sm.json
-│   ├── md.json
-│   └── index.json
-├── typography/
-│   ├── size.json
-│   └── weight.json
+│   └── md.json
 └── schema.json
 ```
 
-## Agent Directive
+## Core Rules
 
-This server follows the UI System Agent Directive (see [AGENTS.md](./AGENTS.md)):
-
-### Core Principles
-
-1. **Canonical Truth**: UI tokens are the single source of truth
-2. **Framework Agnostic**: No token depends on framework concepts
-3. **Token Compliance**: All UI values must come from tokens
-4. **No Hardcoded Values**: Violations result in hard rejection
-5. **AutoHTML is Not Authoritative**: Auto-generated code must be converted to token-governed code
-
-### Multi-Framework Rules
-
-- Core logic must be JS-based
-- Framework adapters are isolated
-- Tokens like `token.space.md` are valid
-- Tokens like `token.padding.react` are forbidden
-
-### Review Checklist
-
-- [ ] All visual values come from tokens
-- [ ] Component is reusable
-- [ ] No AutoHTML residue
-- [ ] Framework adapter respected
-
-### Branch Policy
-
-- `scaffold/autohtml` outputs → prototype branches only
-- `main` branch accepts token-governed system code only
-
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Build the project
-npm run build
-
-# Watch for changes
-npm run watch
-
-# Run the server
-node dist/index.js
-```
+- ⭕ `token.space.md` (framework-agnostic)
+- ❌ `token.padding.react` (framework-specific)
+- ✅ All visual values from tokens
+- ❌ No hardcoded values
+- ❌ AutoHTML is NOT authoritative
 
 ## License
 
-ISC
+MIT
